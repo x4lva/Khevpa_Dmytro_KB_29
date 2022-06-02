@@ -1,0 +1,52 @@
+{% extends 'base-admin.html.twig' %}
+
+{% block title %}Student | Admin{% endblock %}
+
+{% block body %}
+<div class="card">
+    <div class="card-header fw-600">
+        Студенти
+        <a href="{{ path('admin.student.create') }}" class="btn btn-dark btn-sm">Додати Студента</a>
+    </div>
+    <div class="card-body pt-0">
+        <table class="table table-hover my-0 mb-1">
+            <thead>
+                <tr>
+                    <th colspan="1">№</th>
+                    <th>Ім'я</th>
+                    <th>Прізвище</th>
+                    <th>По батькові</th>
+                    <th>Місто</th>
+                    <th>Група</th>
+                    <th>Email</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in pagination %}
+                <tr>
+                    <td colspan="1">{{ item.id }}</td>
+                    <td>{{ item.firstName }}</td>
+                    <td>{{ item.lastName }}</td>
+                    <td>{{ item.midName }}</td>
+                    <td>{{ item.city }}</td>
+                    <td>{{ item.studentGroup.code }}</td>
+                    <td>{{ item.email }}</td>
+                    <td class="text-end">
+                        <a href="{{ path('admin.student.edit', { id: item.id }) }}" class="btn btn-dark btn-sm">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </a>
+                        <a href="{{ path('admin.student.delete', { id: item.id }) }}" class="btn btn-danger btn-sm">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {{ knp_pagination_render(pagination) }}
+    </div>
+</div>
+{% endblock %}
+

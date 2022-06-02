@@ -1,0 +1,97 @@
+.faculty-item {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 2.5em;
+
+    .btn {
+        width: fit-content;
+        margin-top: 0.25em;
+    }
+
+    &-title {
+        font-weight: 700;
+        font-size: 19px;
+        cursor: pointer;
+    }
+
+    &-image {
+        height: 100%;
+        position: relative;
+        display: flex;
+        min-width: 150px;
+        padding-right: 1.35em;
+        justify-content: center;
+
+        &::after {
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: 100%;
+            background-color: #dee2e6;
+            box-shadow: 0 0 0.875rem 0 #dee2e6;
+            top: 0;
+            right: -5px;
+        }
+
+        img {
+            height: 100%;
+            max-height: 145px;
+            padding: 0.5em 0;
+        }
+    }
+    
+    &-content {
+        height: 100%;
+        display: flex;
+        gap: 0.25rem;
+        font-size: 14px;
+        flex-direction: column;
+
+        strong {
+            font-weight: 600;
+        }
+    }
+
+    &-info {
+        a {
+            color: #000;
+
+            &:hover {
+                color: #000;
+            }
+        }
+    }
+}
+
+.faculty-list {
+    width: 50%;
+    height: 640px;
+    overflow-y: scroll;
+    padding-right: 1%;
+
+    @include media-breakpoint-down(xl) {
+        width: 100%;
+        height: fit-content;
+    }
+
+    &::-webkit-scrollbar {
+        width: 5px;
+        background: #ffffff;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        width: 5px;
+        background: #000000;
+    }
+}
+
+#map {
+    width: 48%;
+    height: 640px;
+
+    @include media-breakpoint-down(xl) {
+        width: 100%;
+        margin-bottom: 5em;
+    }
+}

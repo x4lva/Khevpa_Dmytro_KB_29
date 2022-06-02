@@ -1,0 +1,53 @@
+{% form_theme form 'bootstrap_5_layout.html.twig' %}
+
+{% extends 'base-admin.html.twig' %}
+
+{% block title %}Student | Admin{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <div class="card-body">
+            {{ form_start(form) }}
+                <div class="row">
+                    <div class="col-6">
+                        {{ form_row(form.firstName) }}
+                    </div>
+                    <div class="col-6">
+                        {{ form_row(form.lastName) }}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-6">
+                        {{ form_row(form.midName) }}
+                    </div>
+                    <div class="col-6">
+                        {{ form_row(form.email) }}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-6">
+                        {{ form_row(form.city) }}
+                    </div>
+                    <div class="col-6">
+                        {{ form_row(form.dateOfBirth) }}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        {{ form_row(form.imageFile) }}
+                    </div>
+                    <div class="col-3">
+                        {% if student is defined and student.image is defined and student.image is not empty %}
+                            <img class="w-100 mb-3 border rounded p-3" src="{{ vich_uploader_asset(student, 'imageFile') }}" alt="">
+                        {% endif %}
+                    </div>
+                </div>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}
+

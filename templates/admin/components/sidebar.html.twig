@@ -1,0 +1,33 @@
+<div class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark" style="width: 280px;">
+    <ul class="nav nav-pills flex-column mb-auto">
+        <li class="nav-item">
+            <a href="{{ path('admin.faculty.list') }}" class="nav-link text-white {% if 'faculty' in app.request.get('_route') %}active{% endif %}">
+                Факультети
+            </a>
+        </li>
+        <li>
+            <a href="{{ path('admin.speciality.list') }}" class="nav-link text-white {% if 'speciality' in app.request.get('_route') %}active{% endif %}">
+                Спеціальності
+            </a>
+        </li>
+        <li>
+            <a href="{{ path('admin.group.list') }}" class="nav-link text-white {% if 'group' in app.request.get('_route') %}active{% endif %}">
+                Групи
+            </a>
+        </li>
+        <li>
+            <a href="{{ path('admin.student.list') }}" class="nav-link text-white {% if 'student' in app.request.get('_route') %}active{% endif %}">
+                Студенти
+            </a>
+        </li>
+    </ul>
+    <hr>
+    <div class="dropdown">
+        <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+            <strong>x4lva</strong>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1" style="">
+            <li><a class="dropdown-item" href="#">Вийти</a></li>
+        </ul>
+    </div>
+</div>

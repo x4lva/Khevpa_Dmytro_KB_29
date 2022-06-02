@@ -1,0 +1,119 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Faculties{% endblock %}
+
+{% block body %}
+
+    <h2 class="page-title mt-4">Факультети</h2>
+
+    <div class="d-flex flex-xl-row flex-column-reverse justify-content-between my-5">
+        <div class="d-flex flex-column faculty-list">
+            {% for faculty in faculties %}
+                <div class="faculty-item">
+                    <div class="faculty-item-image">
+                        <img src="{{ vich_uploader_asset(faculty, 'imageFile') }}" alt="">
+                    </div>
+                    <div class="faculty-item-content">
+                        <div class="faculty-item-title" title="{{ faculty.code }}" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-content="{{ faculty.description }}">
+                            {{ faculty.name }}
+                        </div>
+                        <span class="faculty-item-info">
+                            <strong>Адреса: </strong> {{ faculty.address }}
+                        </span>
+                        <span class="faculty-item-info">
+                            <strong>Телефон: </strong> <a href="tel:{{ faculty.telephone }}">{{ faculty.telephone }}</a>
+                        </span>
+                        <span class="faculty-item-info">
+                            <strong>Сайт: </strong> <a href="{{ faculty.site }}">{{ faculty.site }}</a>
+                        </span>
+                        <span class="faculty-item-info">
+                            <strong>Email: </strong> <a href="mailto:{{ faculty.email }}">{{ faculty.email }}</a>
+                        </span>
+                        <div id="location-{{ loop.index }}" class="btn btn-dark btn-sm">Маршрут</div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <div id="map" class="shadow-lg">
+
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block javascript %}
+<script lang="js">
+    let map;
+    let geocoder;
+
+    let locations = [
+        {% for key, faculty in faculties %}
+            { lat: {{ faculty.lan }}, lng: {{ faculty.lng }}, title: '{{ faculty.name }}', address: '{{ faculty.address }}' },
+        {% endfor %}
+    ];
+
+    function initMap() {
+        console.log(locations)
+        geocoder = new google.maps.Geocoder();
+        const renderer = {
+            image: {
+                url: 'data:image/svg+xml;charset=utf-8,' +
+                    encodeURIComponent('<svg viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg"><circle cx="110" cy="110" r="100" stroke="black" fill="rgb(0, 0, 0)" fill-opacity="1.0" stroke-width="1" /></svg>'),
+                size: new google.maps.Size(32, 32),
+                scaledSize: new google.maps.Size(32, 32),
+                anchor: new google.maps.Point(16, 16),
+                labelOrigin: new google.maps.Point(16, 16)
+            },
+            render({ count, position }) {
+                return new google.maps.Marker({
+                    label: { text: String(count), color: "white", fontSize: "16px" },
+                    position,
+                    icon: this.image,
+                    zIndex: Number(google.maps.Marker.MAX_ZINDEX) + count,
+                })
+            }
+        }
+        map = new google.maps.Map(
+            document.getElementById("map"),
+            {
+                zoom: 13,
+                center: { lat: 49.835884965250116, lng: 24.014816149390537 },
+                disableDefaultUI: true,
+            }
+        );
+        const infoWindow = new google.maps.InfoWindow({
+            content: "",
+            disableAutoPan: true,
+        });
+        const markers = locations.map((location, i) => {
+            const icon = {
+                url: "https://localhost:8000/build/images/building-columns-solid.svg",
+                scaledSize: new google.maps.Size(18, 18),
+                origin: new google.maps.Point(0,0),
+                anchor: new google.maps.Point(0, 0)
+            };
+            const marker = new google.maps.Marker({
+                position: { lat: location.lat, lng: location.lng},
+                title: location.title,
+                icon: icon
+            });
+            document.getElementById('location-'+ (i+1)).onclick = function() {
+                document.getElementById("map").scrollIntoView();
+                map.panTo(marker.position);
+                map.setZoom(18);
+            };
+            google.maps.event.addDomListener(marker, "click", () => {
+                infoWindow.setContent(`<h5>${location.title}</h5><p>${location.address}</p>`);
+                infoWindow.open(map, marker);
+            });
+            return marker;
+        });
+        new markerClusterer.MarkerClusterer({markers, map, renderer} );
+    }
+
+    window.initMap = initMap;
+</script>
+    <script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD5mUleRFslrKb7wPa9jTB_1C6kgZdp6ss&amp;callback=initMap"
+        async="" defer=""></script>
+{% endblock %}

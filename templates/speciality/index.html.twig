@@ -1,0 +1,159 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Specialities{% endblock %}
+
+{% set subjects = [] %}
+{% set subjectsNames = [] %}
+{% set faculties = [] %}
+{% set facultiesNames = [] %}
+
+{% for speciality in specialities %}
+    {% for mark in speciality.marks %}
+        {% if mark.subject not in subjectsNames %}
+            {% set subjects = subjects|merge([mark]) %}
+            {% set subjectsNames = subjectsNames|merge([mark.subject]) %}
+        {% endif %}
+    {% endfor %}
+
+    {% if speciality.faculty.code not in facultiesNames %}
+        {% set faculties = faculties|merge([speciality.faculty]) %}
+        {% set facultiesNames = facultiesNames|merge([speciality.faculty.code]) %}
+    {% endif %}
+{% endfor %}
+
+{% block body %}
+
+    <h2 class="page-title mt-4">Спеціальності</h2>
+
+    <div class="speciality-container">
+        <div class="speciality-filter shadow-sm">
+            <label>
+                <div class="speciality-filter-title">
+                    Пошук
+                </div>
+                <input onkeyup="onSearchChange(event)" class="speciality-filter-input" placeholder="Введіть назву спеціальності" type="text">
+            </label>
+            <div class="speciality-filter-title">
+                Предмети
+            </div>
+            <div class="speciality-filter-list">
+                {% for subject in subjects %}
+                    <div data-subject="{{ subject.subject }}" class="speciality-filter-list-item subject-filter">
+                        {{ subject.subject }}
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="speciality-filter-title">
+                Інститути
+            </div>
+            <div class="speciality-filter-list">
+                {% for faculty in faculties %}
+                    <div data-faculty="{{ faculty.id }}" class="speciality-filter-list-item faculty-filter">
+                        {{ faculty.code }}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="speciality-list">
+            {% for speciality in specialities %}
+                <div data-faculty="{{ speciality.faculty.id }}" data-subjects="[{% for mark in speciality.marks %}&quot{{ mark.subject }}&quot{% if not loop.last %},{% endif %}{% endfor %}]" class="speciality-item shadow-sm">
+                    <div class="speciality-item-code">
+                        {{ speciality.code }}
+                    </div>
+                    <div class="speciality-item-info">
+                        <h4 class="speciality-item-title">
+                            {{ speciality.name }}
+                        </h4>
+                        <div class="speciality-item-description">
+                            {{ speciality.description }}
+                        </div>
+                    </div>
+                    <div class="speciality-item-faculty">
+                        {{ speciality.faculty.code }}
+                    </div>
+                    <div class="speciality-item-marks" title="Предмети" data-bs-content="{% for mark in speciality.marks %}{{ mark.subject }} <sup>Мін: {{ mark.min }} | Коефіцієнт: {{ mark.coeff }}</sup><br>{% endfor %}" data-bs-html="true" data-bs-toggle="popover" data-bs-trigger="hover">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascript %}
+    <script>
+        let check = (arr, target) => target.every(v => arr.includes(v));
+
+        const filters = document.querySelectorAll('.subject-filter');
+        const facultyFilters = document.querySelectorAll('.faculty-filter');
+        const specialities = document.querySelectorAll('.speciality-item');
+        const selectedFilters = [];
+        const facultySelectedFilters = [];
+
+        const onSearchChange = (e) => {
+            Array.from(specialities).forEach(speciality => {
+                if ((speciality.getElementsByClassName('speciality-item-title')[0].innerHTML.toLowerCase()+speciality.getElementsByClassName('speciality-item-code')[0].innerHTML).includes(e.target.value.toLowerCase())) {
+                    speciality.style.display = 'flex';
+                } else {
+                    speciality.style.display = 'none';
+                }
+            })
+        }
+
+        Array.from(filters).forEach(el => {
+            el.addEventListener('click', (e) => {
+                e.target.classList.toggle('active');
+
+                if (e.target.classList.contains('active')) {
+                    selectedFilters.push(e.target.dataset.subject);
+                } else {
+                    const index = selectedFilters.indexOf(e.target.dataset.subject);
+                    if (index > -1) {
+                        selectedFilters.splice(index, 1);
+                    }
+                }
+
+                Array.from(specialities).forEach(speciality => {
+                    let hasElements = check(JSON.parse(speciality.dataset.subjects), selectedFilters)
+
+                    if (!hasElements) {
+                        speciality.style.display = 'none';
+                    } else {
+                        speciality.style.display = 'flex';
+                    }
+                })
+            })
+        })
+
+        Array.from(facultyFilters).forEach(el => {
+            el.addEventListener('click', (e) => {
+                e.target.classList.toggle('active');
+
+                if (e.target.classList.contains('active')) {
+                    facultySelectedFilters.push(parseInt(e.target.dataset.faculty));
+                } else {
+                    const index = facultySelectedFilters.indexOf(parseInt(e.target.dataset.faculty));
+                    if (index > -1) {
+                        facultySelectedFilters.splice(index, 1);
+                    }
+                }
+
+                Array.from(specialities).forEach(speciality => {
+                    if (facultySelectedFilters.length === 0) {
+                        speciality.style.display = 'flex';
+                        return;
+                    }
+
+                    let hasElements = facultySelectedFilters.includes(parseInt(speciality.dataset.faculty))
+
+                    if (!hasElements) {
+                        speciality.style.display = 'none';
+                    } else {
+                        speciality.style.display = 'flex';
+                    }
+                })
+            })
+        })
+    </script>
+{% endblock %}

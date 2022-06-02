@@ -1,0 +1,116 @@
+{% macro printNewMarkForm(mark) %}
+    <div class="row border-bottom border-1 pb-2 mb-3">
+        <div class="col-4">
+            {{ form_row(mark.subject) }}
+        </div>
+        <div class="col-4">
+            {{ form_row(mark.min) }}
+        </div>
+        <div class="col-4">
+            {{ form_row(mark.coeff) }}
+        </div>
+    </div>
+{% endmacro %}
+
+{% import _self as formMacros %}
+
+{% form_theme form 'bootstrap_5_layout.html.twig' %}
+
+{% extends 'base-admin.html.twig' %}
+
+{% block title %}Speciality | Admin{% endblock %}
+
+{% block body %}
+
+    {{ form_start(form) }}
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-6">
+                    {{ form_row(form.name) }}
+                </div>
+                <div class="col-6">
+                    {{ form_row(form.code) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    {{ form_row(form.description) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    {{ form_row(form.faculty) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    {{ form_row(form.save) }}
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row">
+                <div id="email-fields-list"
+                     data-prototype="{{ formMacros.printNewMarkForm(form.marks.vars.prototype)|e }}"
+                     data-widget-tags="{{ 'div'|e }}"
+                     data-widget-counter="{{ form.marks|length }}">
+                    {% for mark in form.marks %}
+                        {{ form_errors(mark) }}
+                        {{ formMacros.printNewMarkForm(mark) }}
+                    {% endfor %}
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <button type="button"
+                                class="add-another-collection-widget btn btn-dark"
+                                data-list-selector="#email-fields-list">Додати предмет</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{ form_end(form) }}
+{% endblock %}
+
+{% block javascript %}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document
+                .querySelector('.add-another-collection-widget')
+                .addEventListener('click', event => {
+                    const list = document.querySelector(event.target.getAttribute('data-list-selector'));
+
+                    let counter = list.dataset.widgetCounter ||  list.children.length;
+
+                    let newWidget = list.getAttribute('data-prototype');
+
+                    newWidget = newWidget.replace(/__name__/g, counter);
+                    counter++;
+
+                    list.dataset.widgetCounter = counter;
+
+                    const newElem = document.createElement(
+                        list.getAttribute('data-widget-tags')
+                    )
+
+                    newElem.innerHTML = newWidget;
+
+                    list.appendChild(newElem);
+            });
+        });
+    </script>
+
+{% endblock %}
+

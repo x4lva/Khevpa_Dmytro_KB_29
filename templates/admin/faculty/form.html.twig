@@ -1,0 +1,102 @@
+{% form_theme form 'bootstrap_5_layout.html.twig' %}
+
+{% extends 'base-admin.html.twig' %}
+
+{% block title %}Faculty | Admin{% endblock %}
+
+{% block body %}
+
+    <div class="card">
+        <div class="card-body">
+            {{ form_start(form) }}
+            <div class="row">
+                <div class="col-6">
+                    {{ form_row(form.name) }}
+                </div>
+                <div class="col-6">
+                    {{ form_row(form.code) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    {{ form_row(form.description) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    {{ form_row(form.email) }}
+                </div>
+                <div class="col-6">
+                    {{ form_row(form.site) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    {{ form_row(form.telephone) }}
+                </div>
+                <div class="col-6">
+                    {{ form_row(form.address) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-4">
+                    {{ form_row(form.foundationDate) }}
+                </div>
+                <div class="col-4">
+                    {{ form_row(form.lan) }}
+                </div>
+                <div class="col-4">
+                    {{ form_row(form.lng) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    {{ form_row(form.imageFile) }}
+                </div>
+                <div class="col-3">
+                    {% if faculty is defined and faculty.image is defined and faculty.image is not null %}
+                        <img class="mb-3 border rounded p-3" src="{{ vich_uploader_asset(faculty, 'imageFile') }}" alt="">
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="d-flex gap-3 align-items-center">
+                {{ form_row(form.save) }}
+
+                <div id="calculate-coords" class="btn btn-dark mb-3">Розрахувати Координати</div>
+            </div>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascript %}
+<script lang="js">
+
+    const coordsBtn = document.getElementById('calculate-coords');
+    const latInput = document.getElementById('faculty_lan');
+    const lngInput = document.getElementById('faculty_lng');
+
+    coordsBtn.addEventListener('click', (e) => {
+        const geocoder= new google.maps.Geocoder();
+
+        const postcode = document.getElementById('faculty_address').value;
+
+        geocoder.geocode( { 'address': postcode}, function(results, status) {
+            console.log(results)
+            if (status === 'OK') {
+                latInput.value = results[0].geometry.location.lat();
+                lngInput.value = results[0].geometry.location.lng();
+            }
+        });
+    })
+</script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD5mUleRFslrKb7wPa9jTB_1C6kgZdp6ss&libraries=places"></script>
+{% endblock %}
